@@ -54,6 +54,7 @@ class GherkinFormatter(object):
 
   def format(self, parsed):
     for token_type, token in parsed:
+
       if token_type == GherkinParser.TEXT:
         self._emit(token)
       elif token_type == GherkinParser.GROUP:
@@ -67,25 +68,33 @@ class GherkinFormatter(object):
     return result
 
   def _format_group(self, group):
+    widths = self._determine_column_widths(group)
+
+    for line in group:
+      buf = StringIO()
+      buf.write('|')
+
+      for idx, col in enumerate(line):
+        width = widths[idx]
+        padding = width - len(col)
+        buf.write(' ')
+        buf.write(col)
+        buf.write(' ' * padding)
+        buf.write(' |')
+
+      self._emit(buf.getvalue())
+      buf.close()
+
+  def _determine_column_widths(self, group):
     widths = []
+
     for i in range(len(group[0])):
       width = 0
       for j in range(len(group)):
         width = max(len(group[j][i]), width)
       widths.append(width)
 
-    for line in group:
-      buf = "|"
-
-      for idx, col in enumerate(line):
-        width = widths[idx]
-        padding = width - len(col)
-        buf += ' '
-        buf += col
-        buf += ' ' * padding
-        buf += ' |'
-
-      self._emit(buf)
+    return widths
 
   def _emit(self, text):
     self._result.write(text)
