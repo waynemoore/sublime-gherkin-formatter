@@ -2,7 +2,7 @@
 
 ## Installing
 
-I haven't submitted this plugin to Sublime Package Control yet.  In the mean time you can install it by cloning it to your Sublime plugins directory:
+I am waiting for my pull request to be merged in so that you can install via the Sublime Package Control system.  In the mean time you can install it by cloning it to your Sublime plugins directory:
 
 ```
 $ cd ~/Library/Application\ Support/Sublime\ Text\ 2/Packages
