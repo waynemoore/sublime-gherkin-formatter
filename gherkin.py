@@ -3,9 +3,12 @@ import re
 from StringIO import StringIO
 
 
-class GherkinParser(object):
+class Tokens(object):
   TEXT = 1
   GROUP = 2
+
+
+class GherkinParser(object):
 
   def __init__(self, gherkin_text):
     self._gherkin_text = StringIO(gherkin_text)
@@ -37,11 +40,11 @@ class GherkinParser(object):
 
   def _store_and_reset_group(self):
     if len(self._group) > 0:
-      self._tokens.append((GherkinParser.GROUP, self._group))
+      self._tokens.append((Tokens.GROUP, self._group))
       self._new_group()
 
   def _add_text_token(self, text):
-    self._tokens.append((GherkinParser.TEXT, text))
+    self._tokens.append((Tokens.TEXT, text))
 
   def _finish(self):
     self._store_and_reset_group()
@@ -55,9 +58,9 @@ class GherkinFormatter(object):
   def format(self, parsed):
     for token_type, token in parsed:
 
-      if token_type == GherkinParser.TEXT:
+      if token_type == Tokens.TEXT:
         self._emit(token)
-      elif token_type == GherkinParser.GROUP:
+      elif token_type == Tokens.GROUP:
         self._format_group(token)
       else:
         raise Exception('unsupported token type %s' % token_type)

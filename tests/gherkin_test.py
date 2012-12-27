@@ -1,7 +1,7 @@
 import sure
 import unittest
 
-from gherkin import GherkinParser, GherkinFormatter
+from gherkin import GherkinParser, GherkinFormatter, Tokens
 
 
 class GherkinParserTestCase(unittest.TestCase):
@@ -14,9 +14,9 @@ class GherkinParserTestCase(unittest.TestCase):
 
     tokens = GherkinParser(feature).parse()
     tokens.should.have.length_of(3)
-    tokens[0].should.equal((GherkinParser.TEXT, 'Feature: As a tester'))
-    tokens[1].should.equal((GherkinParser.TEXT, 'I want my non example table text to remain intact'))
-    tokens[2].should.equal((GherkinParser.TEXT, 'So that I don\'t want kill the author of this plugin'))
+    tokens[0].should.equal((Tokens.TEXT, 'Feature: As a tester'))
+    tokens[1].should.equal((Tokens.TEXT, 'I want my non example table text to remain intact'))
+    tokens[2].should.equal((Tokens.TEXT, 'So that I don\'t want kill the author of this plugin'))
 
   def test_it_should_parse_example_groups(self):
     example_text = "\
@@ -28,7 +28,7 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens.should.have.length_of(1)
 
     group = tokens[0]
-    group[0].should.equal(GherkinParser.GROUP)
+    group[0].should.equal(Tokens.GROUP)
 
     examples = group[1]
     examples.should.have.length_of(3)
@@ -49,13 +49,13 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens = GherkinParser(feature).parse()
     tokens.should.have.length_of(5)
 
-    tokens[0].should.equal((GherkinParser.TEXT, 'Feature: As a crazy cat person'))
-    tokens[1].should.equal((GherkinParser.TEXT, 'I want to write a list of cat breeds'))
-    tokens[2].should.equal((GherkinParser.TEXT, 'So that my codez is odd'))
-    tokens[3].should.equal((GherkinParser.TEXT, ''))
+    tokens[0].should.equal((Tokens.TEXT, 'Feature: As a crazy cat person'))
+    tokens[1].should.equal((Tokens.TEXT, 'I want to write a list of cat breeds'))
+    tokens[2].should.equal((Tokens.TEXT, 'So that my codez is odd'))
+    tokens[3].should.equal((Tokens.TEXT, ''))
 
     group = tokens[4]
-    group[0].should.equal(GherkinParser.GROUP)
+    group[0].should.equal(Tokens.GROUP)
 
     examples = group[1]
     examples.should.have.length_of(3)
@@ -73,16 +73,16 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens = GherkinParser(feature).parse()
     tokens.should.have.length_of(4)
 
-    tokens[0].should.equal((GherkinParser.TEXT, 'foo'))
+    tokens[0].should.equal((Tokens.TEXT, 'foo'))
 
     group = tokens[1]
-    group[0].should.equal(GherkinParser.GROUP)
+    group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['exampleA']])
 
-    tokens[2].should.equal((GherkinParser.TEXT, 'bar'))
+    tokens[2].should.equal((Tokens.TEXT, 'bar'))
 
     group = tokens[3]
-    group[0].should.equal(GherkinParser.GROUP)
+    group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['example1', 'example2']])
 
 
