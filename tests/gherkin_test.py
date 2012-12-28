@@ -10,13 +10,22 @@ class GherkinParserTestCase(unittest.TestCase):
     feature = "\
     Feature: As a tester\n\
     I want my non example table text to remain intact\n\
-    So that I don't want kill the author of this plugin"
+    So that I don't want to kill the author of this plugin"
 
     tokens = GherkinParser(feature).parse()
-    tokens.should.have.length_of(3)
-    tokens[0].should.equal((Tokens.TEXT, 'Feature: As a tester'))
-    tokens[1].should.equal((Tokens.TEXT, 'I want my non example table text to remain intact'))
-    tokens[2].should.equal((Tokens.TEXT, 'So that I don\'t want kill the author of this plugin'))
+    tokens.should.have.length_of(9)
+
+    tokens[0].should.equal((Tokens.INDENT, '    '))
+    tokens[1].should.equal((Tokens.TEXT, 'Feature: As a tester'))
+    tokens[2].should.equal((Tokens.NEWLINE, '\n'))
+
+    tokens[3].should.equal((Tokens.INDENT, '    '))
+    tokens[4].should.equal((Tokens.TEXT, 'I want my non example table text to remain intact'))
+    tokens[5].should.equal((Tokens.NEWLINE, '\n'))
+
+    tokens[6].should.equal((Tokens.INDENT, '    '))
+    tokens[7].should.equal((Tokens.TEXT, 'So that I don\'t want to kill the author of this plugin'))
+    tokens[8].should.equal((Tokens.NEWLINE, '\n'))
 
   def test_it_should_parse_example_groups(self):
     example_text = "\
@@ -47,14 +56,24 @@ class GherkinParserTestCase(unittest.TestCase):
     |Octocat|The Web|\n"
 
     tokens = GherkinParser(feature).parse()
-    tokens.should.have.length_of(5)
+    tokens.should.have.length_of(12)
 
-    tokens[0].should.equal((Tokens.TEXT, 'Feature: As a crazy cat person'))
-    tokens[1].should.equal((Tokens.TEXT, 'I want to write a list of cat breeds'))
-    tokens[2].should.equal((Tokens.TEXT, 'So that my codez is odd'))
-    tokens[3].should.equal((Tokens.TEXT, ''))
+    tokens[0].should.equal((Tokens.INDENT, '    '))
+    tokens[1].should.equal((Tokens.TEXT, 'Feature: As a crazy cat person'))
+    tokens[2].should.equal((Tokens.NEWLINE, '\n'))
 
-    group = tokens[4]
+    tokens[3].should.equal((Tokens.INDENT, '    '))
+    tokens[4].should.equal((Tokens.TEXT, 'I want to write a list of cat breeds'))
+    tokens[5].should.equal((Tokens.NEWLINE, '\n'))
+
+    tokens[6].should.equal((Tokens.INDENT, '    '))
+    tokens[7].should.equal((Tokens.TEXT, 'So that my codez is odd'))
+    tokens[8].should.equal((Tokens.NEWLINE, '\n'))
+
+    tokens[9].should.equal((Tokens.INDENT, '    '))
+    tokens[10].should.equal((Tokens.NEWLINE, '\n'))
+
+    group = tokens[11]
     group[0].should.equal(Tokens.GROUP)
 
     examples = group[1]
@@ -71,17 +90,22 @@ class GherkinParserTestCase(unittest.TestCase):
     |example1|example2|\n"
 
     tokens = GherkinParser(feature).parse()
-    tokens.should.have.length_of(4)
+    tokens.should.have.length_of(8)
 
-    tokens[0].should.equal((Tokens.TEXT, 'foo'))
+    tokens[0].should.equal((Tokens.INDENT, '    '))
+    tokens[1].should.equal((Tokens.TEXT, 'foo'))
+    tokens[2].should.equal((Tokens.NEWLINE, '\n'))
 
-    group = tokens[1]
+    group = tokens[3]
+    print ":: group ::> %s" % str(group)
     group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['exampleA']])
 
-    tokens[2].should.equal((Tokens.TEXT, 'bar'))
+    tokens[4].should.equal((Tokens.INDENT, '    '))
+    tokens[5].should.equal((Tokens.TEXT, 'bar'))
+    tokens[6].should.equal((Tokens.NEWLINE, '\n'))
 
-    group = tokens[3]
+    group = tokens[7]
     group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['example1', 'example2']])
 
@@ -92,12 +116,12 @@ class GherkinFormatterTestCase(unittest.TestCase):
     feature = "\
     Feature: As a tester\n\
     I want my non example table text to remain intact\n\
-    So that I don't want kill the author of this plugin\n"
+    So that I don't want to kill the author of this plugin\n"
 
     parsed = GherkinParser(feature).parse()
     text = GherkinFormatter().format(parsed)
 
-    text.should.equal(_strip_leading_whitespace(feature))
+    text.should.equal(feature)
 
   def test_it_should_format_example_group_columns_to_widest_value(self):
     examples = "\
@@ -119,7 +143,7 @@ class GherkinFormatterTestCase(unittest.TestCase):
     feature = "\
     Feature: As a tester\n\
     I want my non example table text to remain intact\n\
-    So that I don't want kill the author of this plugin\n\
+    So that I don't want to kill the author of this plugin\n\
     \n\
     |cat breeds|country|\n\
     |Manx|Isle of Man|\n\
@@ -130,17 +154,11 @@ class GherkinFormatterTestCase(unittest.TestCase):
 
     lines = text.split('\n')
     lines.should.have.length_of(8)
-    lines[0].should.equal('Feature: As a tester')
-    lines[1].should.equal('I want my non example table text to remain intact')
-    lines[2].should.equal('So that I don\'t want kill the author of this plugin')
-    lines[3].should.equal('')
+    lines[0].should.equal('    Feature: As a tester')
+    lines[1].should.equal('    I want my non example table text to remain intact')
+    lines[2].should.equal('    So that I don\'t want to kill the author of this plugin')
+    lines[3].should.equal('    ')
     lines[4].should.equal('| cat breeds | country     |')
     lines[5].should.equal('| Manx       | Isle of Man |')
     lines[6].should.equal('| Octocat    | The Web     |')
     lines[7].should.equal('')
-
-
-def _strip_leading_whitespace(text):
-  lines = map(lambda l: l.lstrip(), text.split("\n"))
-  return '\n'.join(lines)
-

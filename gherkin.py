@@ -1,3 +1,4 @@
+import os
 import re
 
 from StringIO import StringIO
@@ -6,6 +7,8 @@ from StringIO import StringIO
 class Tokens(object):
   TEXT = 1
   GROUP = 2
+  INDENT = 4
+  NEWLINE = 8
 
 
 class GherkinParser(object):
@@ -19,12 +22,13 @@ class GherkinParser(object):
     example_re = re.compile(r'\s*\|[^|]+\|\s*')
 
     for line in self._gherkin_text.readlines():
-      line = line.strip()
 
       if example_re.match(line):
         self._collect_group_item(line)
+
       else:
         self._store_and_reset_group()
+        line = self._strip_and_store_indent(line)
         self._add_text_token(line)
 
     self._finish()
@@ -43,8 +47,22 @@ class GherkinParser(object):
       self._tokens.append((Tokens.GROUP, self._group))
       self._new_group()
 
+  def _strip_and_store_indent(self, line):
+    indent_re = re.compile(r'(\ +)')
+    match = indent_re.match(line)
+
+    if match:
+      self._tokens.append((Tokens.INDENT, match.groups()[0]))
+      return line.lstrip()
+
+    return line
+
   def _add_text_token(self, text):
-    self._tokens.append((Tokens.TEXT, text))
+    if len(text):
+      self._tokens.append((Tokens.TEXT, text.rstrip()))
+
+    # TODO: detect exact line seperator used (for non Unix systems)
+    self._tokens.append((Tokens.NEWLINE, '\n'))
 
   def _finish(self):
     self._store_and_reset_group()
@@ -58,10 +76,12 @@ class GherkinFormatter(object):
   def format(self, parsed):
     for token_type, token in parsed:
 
-      if token_type == Tokens.TEXT:
+      if token_type in [Tokens.TEXT, Tokens.INDENT, Tokens.NEWLINE]:
         self._emit(token)
+
       elif token_type == Tokens.GROUP:
         self._format_group(token)
+
       else:
         raise Exception('unsupported token type %s' % token_type)
 
@@ -85,6 +105,7 @@ class GherkinFormatter(object):
         buf.write(' ' * padding)
         buf.write(' |')
 
+      buf.write('\n')
       self._emit(buf.getvalue())
       buf.close()
 
@@ -101,4 +122,3 @@ class GherkinFormatter(object):
 
   def _emit(self, text):
     self._result.write(text)
-    self._result.write('\n')
