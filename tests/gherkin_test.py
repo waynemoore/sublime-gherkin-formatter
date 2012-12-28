@@ -97,7 +97,6 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens[2].should.equal((Tokens.NEWLINE, '\n'))
 
     group = tokens[3]
-    print ":: group ::> %s" % str(group)
     group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['exampleA']])
 
