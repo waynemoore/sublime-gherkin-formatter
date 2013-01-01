@@ -39,13 +39,10 @@ class GherkinParser(object):
     elements = [item.strip() for item in line.split('|')[1:-1]]
     self._group.append(elements)
 
-  def _new_group(self):
-    self._group = []
-
   def _store_and_reset_group(self):
     if len(self._group) > 0:
       self._tokens.append((Tokens.GROUP, self._group))
-      self._new_group()
+      self._group = []
 
   def _strip_and_store_indent(self, line):
     indent_re = re.compile(r'(\ +)')
