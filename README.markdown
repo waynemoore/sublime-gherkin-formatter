@@ -21,31 +21,3 @@ It's a python project, so I recommend you make use of [virtualenv](http://www.vi
 4. Write a test
 5. Implement your feature / bugfix
 6. Open a pull request
-
-## Known Issues
-
-### Removes leading whitespace
-
-The plugin currently strips the leading white space from each line, so if you like to indent some of your text, you will probably get annoyed - I plan to fix this soon.
-
-For example:
-
-```
-As a developer
-  I want my leading whitespace stripped
-    Because this indentation is weird
-
-Examples:
-  |stuff|
-```
-
-Will reformat to:
-
-```
-As a developer
-I want my leading whitespace stripped
-Because this indentation is weird
-
-Examples:
-|stuff|
-```
