@@ -1,0 +1,3 @@
+[
+    { "caption": "Gherkin/Cucumber: Format", "command": "format_gherkin" }
+]

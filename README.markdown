@@ -63,7 +63,7 @@ $ git clone git://github.com/waynemoore/sublime-gherkin-formatter.git
 
 ## Usage
 
-You can use `<Ctrl> + <Alt> + G` to reformat your current buffer.
+You can use `<Ctrl> + <Alt> + G` to reformat your current buffer.  Or run it by selecting "Gherkin/Cucumber: Format" from the Command Palette.
 
 ## Contributing
 
