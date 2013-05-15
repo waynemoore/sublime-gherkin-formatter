@@ -63,7 +63,11 @@ $ git clone git://github.com/waynemoore/sublime-gherkin-formatter.git
 
 ## Usage
 
-You can use `<Ctrl> + <Alt> + G` to reformat your current buffer.  Or run it by selecting "Gherkin/Cucumber: Format" from the Command Palette.
+There are a few ways to use it:
+
+- `<Cmd> + <Shift> + |` - This matches the TextMate cucumber plugin's key binding.
+- `<Ctrl> + <Alt> + G` - DEPRECATED. Original key binding still set to avoid surprise when upgrading the plugin.
+- Select "Gherkin/Cucumber: Format" from the Command Palette.
 
 ## Contributing
 
