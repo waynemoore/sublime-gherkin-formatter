@@ -1,7 +1,7 @@
 import sure
 import unittest
 
-from gherkin import GherkinParser, GherkinFormatter, Tokens
+from gherkin import GherkinParser, GherkinFormatter, Tokens, Indent
 
 
 class GherkinParserTestCase(unittest.TestCase):
@@ -15,15 +15,15 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens = GherkinParser(feature).parse()
     tokens.should.have.length_of(9)
 
-    tokens[0].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[0].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[1].should.equal((Tokens.TEXT, 'Feature: As a tester', {}))
     tokens[2].should.equal((Tokens.NEWLINE, '\n', {}))
 
-    tokens[3].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[3].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[4].should.equal((Tokens.TEXT, 'I want my non example table text to remain intact', {}))
     tokens[5].should.equal((Tokens.NEWLINE, '\n', {}))
 
-    tokens[6].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[6].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[7].should.equal((Tokens.TEXT, 'So that I don\'t want to kill the author of this plugin', {}))
     tokens[8].should.equal((Tokens.NEWLINE, '\n', {}))
 
@@ -58,19 +58,19 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens = GherkinParser(feature).parse()
     tokens.should.have.length_of(12)
 
-    tokens[0].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[0].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[1].should.equal((Tokens.TEXT, 'Feature: As a crazy cat person', {}))
     tokens[2].should.equal((Tokens.NEWLINE, '\n', {}))
 
-    tokens[3].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[3].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[4].should.equal((Tokens.TEXT, 'I want to write a list of cat breeds', {}))
     tokens[5].should.equal((Tokens.NEWLINE, '\n', {}))
 
-    tokens[6].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[6].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[7].should.equal((Tokens.TEXT, 'So that my codez is odd', {}))
     tokens[8].should.equal((Tokens.NEWLINE, '\n', {}))
 
-    tokens[9].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[9].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[10].should.equal((Tokens.NEWLINE, '\n', {}))
 
     group = tokens[11]
@@ -92,7 +92,7 @@ class GherkinParserTestCase(unittest.TestCase):
     tokens = GherkinParser(feature).parse()
     tokens.should.have.length_of(8)
 
-    tokens[0].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[0].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[1].should.equal((Tokens.TEXT, 'foo', {}))
     tokens[2].should.equal((Tokens.NEWLINE, '\n', {}))
 
@@ -100,7 +100,7 @@ class GherkinParserTestCase(unittest.TestCase):
     group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['exampleA']])
 
-    tokens[4].should.equal((Tokens.INDENT, '    ', {}))
+    tokens[4].should.equal((Tokens.INDENT, Indent(Indent.SPACE, 4), {}))
     tokens[5].should.equal((Tokens.TEXT, 'bar', {}))
     tokens[6].should.equal((Tokens.NEWLINE, '\n', {}))
 
@@ -120,7 +120,7 @@ class GherkinParserTestCase(unittest.TestCase):
     group = tokens[0]
     group[0].should.equal(Tokens.GROUP)
     group[1].should.equal([['example1'], ['example2'], ['example3']])
-    group[2].should.equal({'indent': 6})
+    group[2].should.equal({'indent': Indent(Indent.SPACE, 6)})
 
 
 class GherkinFormatterTestCase(unittest.TestCase):
@@ -176,7 +176,7 @@ class GherkinFormatterTestCase(unittest.TestCase):
     lines[6].should.equal('    | Octocat    | The Web     |')
     lines[7].should.equal('')
 
-  def test_it_should_indent_example_groups_based_on_first_line(self):
+  def test_it_should_indent_example_groups_based_on_first_line_spaces(self):
     feature = "\
     Feature: foo\n\
       |example1|\n\
@@ -191,3 +191,27 @@ class GherkinFormatterTestCase(unittest.TestCase):
       | example1 |\n\
       | example2 |\n\
       | example3 |\n")
+
+  def test_it_should_indent_example_groups_based_on_first_line_tabs(self):
+    feature = "\tFeature: foo\n\t\t|example1|\n\t|example2|\n|example3|\n"
+
+    parsed = GherkinParser(feature).parse()
+    text = GherkinFormatter().format(parsed)
+
+    text.should.equal("\tFeature: foo\n\t\t| example1 |\n\t\t| example2 |\n\t\t| example3 |\n")
+
+
+class IndentTestCase(unittest.TestCase):
+
+  def test_equality(self):
+    Indent(Indent.SPACE, 4).should.equal(Indent(Indent.SPACE, 4))
+
+  def test_str(self):
+    str(Indent(Indent.SPACE, 4)).should.equal('    ')
+    str(Indent(Indent.TAB, 2)).should.equal('\t\t')
+    self.assertRaises(RuntimeError, Indent(999, 1).__str__)
+
+  def test_detect(self):
+    Indent.detect('  foo').should.equal(Indent(Indent.SPACE, 2))
+    Indent.detect('\tfoo').should.equal(Indent(Indent.TAB, 1))
+    Indent.detect('foo').should.equal(None)

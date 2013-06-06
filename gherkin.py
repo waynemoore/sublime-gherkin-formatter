@@ -11,13 +11,48 @@ class Tokens(object):
   NEWLINE = 8
 
 
+class Indent(object):
+  SPACE = 1
+  TAB = 2
+
+  def __init__(self, type, size):
+    self.type = type
+    self.size = size
+
+  def __hash__(self):
+    return (self.type, self.size).__hash__()
+
+  def __cmp__(self, other):
+    return cmp(hash(self), hash(other))
+
+  def __str__(self):
+    if self.type == Indent.SPACE:
+      return ' ' * self.size
+    elif self.type == Indent.TAB:
+      return '\t' * self.size
+
+    raise RuntimeError("Indent type '%s' not recognised" % self.type)
+
+  @classmethod
+  def detect(self, text):
+    match = re.compile(r'(\ +)').match(text)
+    if match:
+      return Indent(Indent.SPACE, len(match.groups()[0]))
+
+    match = re.compile(r'(\t+)').match(text)
+    if match:
+      return Indent(Indent.TAB, len(match.groups()[0]))
+
+    return None
+
+
 class GherkinParser(object):
 
   def __init__(self, gherkin_text):
     self._gherkin_text = StringIO(gherkin_text)
     self._tokens = []
     self._group = []
-    self._group_indent = 0
+    self._group_indent = None
 
   def parse(self):
     example_re = re.compile(r'\s*\|[^|]+\|\s*')
@@ -38,9 +73,9 @@ class GherkinParser(object):
 
   def _collect_group_item(self, line):
     if len(self._group) == 0:
-      indent = self._extract_indent(line)
+      indent = Indent.detect(line)
       if indent:
-        self._group_indent = len(indent)
+        self._group_indent = indent
 
     elements = [item.strip() for item in line.split('|')[1:-1]]
     self._group.append(elements)
@@ -49,10 +84,10 @@ class GherkinParser(object):
     if len(self._group) > 0:
       self._append_token(Tokens.GROUP, self._group, {'indent': self._group_indent})
       self._group = []
-      self._group_indent = 0
+      self._group_indent = None
 
   def _strip_and_store_indent(self, line):
-    indent = self._extract_indent(line)
+    indent = Indent.detect(line)
 
     if indent:
       self._append_token(Tokens.INDENT, indent)
@@ -66,10 +101,6 @@ class GherkinParser(object):
 
     # TODO: detect exact line seperator used (for non Unix systems)
     self._append_token(Tokens.NEWLINE, '\n')
-
-  def _extract_indent(self, text):
-    match = re.compile(r'(\ +)').match(text)
-    return match.groups()[0] if match else None
 
   def _append_token(self, type, data, meta=None):
     self._tokens.append((type, data, meta or {}))
@@ -105,7 +136,7 @@ class GherkinFormatter(object):
 
     for line in group:
       buf = StringIO()
-      buf.write(' ' * indent)
+      buf.write(indent)
       buf.write('|')
 
       for idx, col in enumerate(line):
