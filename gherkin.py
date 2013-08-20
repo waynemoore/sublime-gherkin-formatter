@@ -1,8 +1,7 @@
 import os
 import re
 
-from StringIO import StringIO
-
+from io import StringIO
 
 class Tokens(object):
   TEXT = 1
@@ -136,7 +135,7 @@ class GherkinFormatter(object):
 
     for line in group:
       buf = StringIO()
-      buf.write(indent)
+      buf.write(str(indent))
       buf.write('|')
 
       for idx, col in enumerate(line):
@@ -163,4 +162,4 @@ class GherkinFormatter(object):
     return widths
 
   def _emit(self, text):
-    self._result.write(text)
+    self._result.write(str(text))

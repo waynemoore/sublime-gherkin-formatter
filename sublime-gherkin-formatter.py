@@ -1,6 +1,6 @@
 import sublime, sublime_plugin
 
-from formatter import ViewFormatter
+from .formatter import ViewFormatter
 
 
 class FormatGherkinCommand(sublime_plugin.TextCommand):

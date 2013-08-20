@@ -1,4 +1,4 @@
-from gherkin import GherkinParser, GherkinFormatter
+from .gherkin import GherkinParser, GherkinFormatter
 
 
 class ViewFormatter(object):
