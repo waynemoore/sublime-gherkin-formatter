@@ -1,4 +1,6 @@
-from .gherkin import GherkinParser, GherkinFormatter
+from __future__ import unicode_literals
+
+from lib.gherkin import GherkinParser, GherkinFormatter
 
 
 class ViewFormatter(object):

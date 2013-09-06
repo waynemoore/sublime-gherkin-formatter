@@ -1,8 +1,11 @@
+from __future__ import unicode_literals
+
+
 class MockRegion(object):
 
   def __init__(self, a, b):
-    self.a = long(a)
-    self.b = long(b)
+    self.a = int(a)
+    self.b = int(b)
 
   def begin(self):
     return self.a
@@ -20,7 +23,6 @@ class MockRegionSet(object):
     self.regions = []
 
   def __getitem__(self, key):
-    print self.regions
     return self.regions[key]
 
 

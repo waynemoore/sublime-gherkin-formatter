@@ -1,8 +1,10 @@
+from __future__ import unicode_literals
+
 import sure
 import unittest
 
 from formatter import ViewFormatter
-from mocks import *
+from .mocks import *
 
 
 class FormatterTestCase(unittest.TestCase):

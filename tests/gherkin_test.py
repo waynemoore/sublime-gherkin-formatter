@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import sure
 import unittest
 
@@ -175,6 +177,14 @@ class GherkinFormatterTestCase(unittest.TestCase):
     lines[5].should.equal('    | Manx       | Isle of Man |')
     lines[6].should.equal('    | Octocat    | The Web     |')
     lines[7].should.equal('')
+
+  def test_it_should_format_tables_with_no_indent(self):
+    feature = "Feature: foo\n|example1|\n|example2|\n"
+
+    parsed = GherkinParser(feature).parse()
+    text = GherkinFormatter().format(parsed)
+
+    text.should.equal("Feature: foo\n| example1 |\n| example2 |\n")
 
   def test_it_should_indent_example_groups_based_on_first_line_spaces(self):
     feature = "\

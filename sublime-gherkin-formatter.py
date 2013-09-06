@@ -1,6 +1,10 @@
 import sublime, sublime_plugin
 
-from .formatter import ViewFormatter
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from lib.formatter import ViewFormatter
 
 
 class FormatGherkinCommand(sublime_plugin.TextCommand):

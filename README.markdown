@@ -79,3 +79,6 @@ It's a python project, so I recommend you make use of [virtualenv](http://www.vi
 4. Write a test
 5. Implement your feature / bugfix
 6. Open a pull request
+
+## Contributors
+- Paul Tyng (@paultyng)

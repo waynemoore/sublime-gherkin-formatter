@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 import re
 
@@ -18,19 +20,22 @@ class Indent(object):
     self.type = type
     self.size = size
 
-  def __hash__(self):
-    return (self.type, self.size).__hash__()
-
-  def __cmp__(self, other):
-    return cmp(hash(self), hash(other))
-
-  def __str__(self):
+  def render(self):
     if self.type == Indent.SPACE:
       return ' ' * self.size
     elif self.type == Indent.TAB:
       return '\t' * self.size
 
     raise RuntimeError("Indent type '%s' not recognised" % self.type)
+
+  def __hash__(self):
+    return (self.type, self.size).__hash__()
+
+  def __eq__(self, other):
+    return hash(self) == hash(other)
+
+  def __str__(self):
+    return self.render();
 
   @classmethod
   def detect(self, text):
@@ -135,7 +140,7 @@ class GherkinFormatter(object):
 
     for line in group:
       buf = StringIO()
-      buf.write(str(indent))
+      buf.write(self._rendered_text_object(indent) or '')
       buf.write('|')
 
       for idx, col in enumerate(line):
@@ -162,4 +167,10 @@ class GherkinFormatter(object):
     return widths
 
   def _emit(self, text):
-    self._result.write(str(text))
+    self._result.write(self._rendered_text_object(text))
+
+  def _rendered_text_object(self, text):
+    # KLUDGE, couldn't use str on classes and strings and still be
+    # cross Python 2/3 compatible.
+    return text.render() if hasattr(text, 'render') else text
+
