@@ -29,3 +29,13 @@ class FormatterTestCase(unittest.TestCase):
     formatter.format_view(None)
 
     view.sel()[0].begin().should.equal(5)
+
+  def test_view_formats_single_region(self):
+    view = MockView("Feature1: test\n |item12345|\n|item2|\n\nFeature2: |item3|\n|item4|")
+
+    view.sel().add(MockRegion(0, 35))
+
+    formatter = ViewFormatter(self.sublime, view)
+    formatter.format_view(None)
+
+    view.buffer.should.equal("Feature1: test\n | item12345 |\n | item2     |\n")
