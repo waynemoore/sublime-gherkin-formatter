@@ -10,6 +10,9 @@ class MockRegion(object):
   def begin(self):
     return self.a
 
+  def empty(self):
+    return self.a == self.b
+
 
 class MockRegionSet(object):
 
