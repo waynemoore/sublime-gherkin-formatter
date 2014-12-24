@@ -2,7 +2,7 @@
 
 ## Features
 
-At this stage all it really does is format example group tables.
+At this stage all it really does is format example group tables.  The entire buffer will be formatted unless you select a specific region.
 
 ### Spacing
 
@@ -71,7 +71,7 @@ There are a few ways to use it:
 
 ## Contributing
 
-It's a python project, so I recommend you make use of [virtualenv](http://www.virtualenv.org/) to manage dependencies.
+It's a Python project, so I recommend you make use of [virtualenv](http://www.virtualenv.org/) to manage dependencies.
 
 1. Clone repository
 2. `$ pip install -r requirements.pip`
@@ -81,4 +81,5 @@ It's a python project, so I recommend you make use of [virtualenv](http://www.vi
 6. Open a pull request
 
 ## Contributors
-- Paul Tyng (@paultyng)
+- [Paul Tyng](https://github.com/paultyng)
+- [Simon van Lankveld](https://github.com/simvan)
